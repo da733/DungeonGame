@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 //This class loads the textures for all the objects from png images.
 public class Texture {
 
-    SpriteSheet bs, ps, beers, obs, vs, hs, gos, ss;
+    SpriteSheet bs, ps, beers, obs, vs, hs, gos, ss, bons, starts;
     private BufferedImage block_sheet = null;
     private BufferedImage player_sheet = null;
     private BufferedImage health_sheet = null;
@@ -15,6 +15,8 @@ public class Texture {
     private BufferedImage villain_sheet = null;
     private BufferedImage spotlight_sheet = null;
     private BufferedImage gameover_sheet = null;
+    private BufferedImage bouncer_sheet = null;
+    private BufferedImage start_sheet = null;
 
 
     public BufferedImage[] block = new BufferedImage[3];
@@ -25,6 +27,8 @@ public class Texture {
     public BufferedImage[] health = new BufferedImage[2];
     public BufferedImage[] spotlight = new BufferedImage[4];
     public BufferedImage[] gameover = new BufferedImage[1];
+    public BufferedImage[] bouncer = new BufferedImage[2];
+    public BufferedImage[] start_menu = new BufferedImage[1];
 
 
     //Loads the png images
@@ -38,6 +42,8 @@ public class Texture {
             villain_sheet = loader.loadImage("/villain_sheet.png");
             spotlight_sheet = loader.loadImage("/Spolight_Sheet.png");
             gameover_sheet = loader.loadImage("/gameover.png");
+            bouncer_sheet = loader.loadImage("/Bouncer_resting.png");
+            start_sheet = loader.loadImage("/Start_menu.png");
 
         }catch(Exception e){
             e.printStackTrace();
@@ -50,6 +56,8 @@ public class Texture {
         hs = new SpriteSheet(health_sheet);
         ss = new SpriteSheet(spotlight_sheet);
         gos = new SpriteSheet(gameover_sheet);
+        bons = new SpriteSheet(bouncer_sheet);
+        starts = new SpriteSheet(start_sheet);
 
         getTextures();
     }
@@ -59,6 +67,7 @@ public class Texture {
         block[0] = bs.grabImage(1,1,32,32); //dirt block
         block[1] = bs.grabImage(2,1,32,32); //grass block
         block[2] = bs.grabImage(3,1,32,32); // Game Over block
+
         player[0] = ps.grabImage(1,1,25,41);//idle player
         player[1] = ps.grabImage(2,1,25,41);
         player[2] = ps.grabImage(3,1,25,41);
@@ -79,9 +88,14 @@ public class Texture {
         spotlight[2] = ss.grabImage(1,2,512,512);
         spotlight[3] = ss.grabImage(2,2,512,512);
 
+        bouncer[0] = bons.grabImage(1,1,500,200);
+        bouncer[1] = bons.grabImage(2,1,500,200);
+
         beer[0] = beers.grabImage(1,3,32,32);
         obstacle[0] = obs.grabImage(1,1,32,32);
         gameover[0] = gos.grabImage(1,1,960,800);
+        start_menu[0] = starts.grabImage(1,1,960,800);
+
 
     }
 }

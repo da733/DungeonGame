@@ -15,26 +15,23 @@ import java.util.Random;
 //This class Handles the main game logic
 public class Game extends Canvas implements Runnable {
 
-    public static boolean isAppear = true;
-    private boolean running = false;
-    private Thread thread;
-    public static int WIDTH, HEIGHT;
-    public BufferedImage level0 = null, level = null, city = null;
-
-    public static int init_time = 60;
-    public static int time = init_time;
-
-    public static int count;
-    public static int delay;
-
     // Object
-    Handler handler;
+    public Handler handler;
     Camera cam;
     public static Game_Timer game_timer;
     static Texture tex;
     private HUD hud;
 
+    public static boolean isAppear = true;
+    public static boolean isStarting = false;
+    private boolean running = false;
+    private Thread thread;
+    public static int WIDTH, HEIGHT;
+    public BufferedImage start_menu = null, level = null, city = null;
+    public static int count;
+    public static int delay;
     public static int LEVEL = 1;
+
 
     public void init() {
         WIDTH = getWidth();
@@ -43,21 +40,29 @@ public class Game extends Canvas implements Runnable {
 
         BufferedImageLoader loader = new BufferedImageLoader();
         // loading the level
-        level = loader.loadImage("/level.png");//Loads the level image
-        city = loader.loadImage("/city.png");//Loads the background city image
 
+        city = loader.loadImage("/Overground_City_Scene_Big_improved.png");//Loads the background city image
+        start_menu = loader.loadImage("/Start_menu.png");
         cam = new Camera(0,0);//Initializes Camera
         handler = new Handler(cam, game_timer);//Initializes Handler
-        handler.LoadImageLevel(level);
-        handler.addObject(new Health(650 ,20, handler,ObjectId.Health));//Initializes health
+//        handler.LoadImageLevel(level);
+        isStarting();
+//        handler.addObject(new Health(650 ,20, handler,ObjectId.Health));//Initializes health
         game_timer = new Game_Timer(0,0, ObjectId.Game_Timer);//Initializes game timer
 
-        for (int i = 0; i < handler.object.size(); i++) {
+        // initialize HUD object
+        GameObject finishingScreenObject = null;
+        GameObject healthObject = null;
+        for(int i = 0; i<handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
-            if(tempObject.getId() == ObjectId.Health){
-                hud = new HUD((Health) tempObject, game_timer);
+            if(tempObject.getId() == ObjectId.Health) {
+                healthObject = tempObject;
+            }
+            if(tempObject.getId() == ObjectId.Finishing_Screen) {
+                finishingScreenObject = tempObject;
             }
         }
+        hud = new HUD((Health) healthObject, game_timer, (Finishing_Screen) finishingScreenObject);
         this.addKeyListener(new KeyInput(handler, this, hud));//Adds key Listener
         game_timer.init();
 
@@ -71,6 +76,7 @@ public class Game extends Canvas implements Runnable {
         thread.start();
 
     }
+
     // Function which runs the FPS
     public void run() {
 
@@ -97,8 +103,6 @@ public class Game extends Canvas implements Runnable {
             frames++;
 
             if ((System.currentTimeMillis() - timer) > 1000) {
-//                if (time >= 0)
-//                    time--;
                 timer += 1000;
                 System.out.println("FPS: " + frames + "  TICKS: " + updates);
                 frames = 0;
@@ -106,6 +110,7 @@ public class Game extends Canvas implements Runnable {
             }
         }
     }
+
     //Function which carries out the functions at each tick
     private void tick() {
         handler.tick();
@@ -117,14 +122,14 @@ public class Game extends Canvas implements Runnable {
             isAppear = !isAppear;
         }
 
+        // the code below controls the appearance of game over screen
         for (int i = 0; i<handler.object.size(); i++){
             GameObject tempObject = handler.object.get(i);
             if(tempObject.getId() == ObjectId.Player){
                 cam.tick(tempObject);
                 GameObject healthObject = handler.object.get(0);
                 if (healthObject.healthNum == healthObject.minHealth) {
-                //Checking if the player has died
-                    GameOver();
+                    GameOver();//Checking if the player has died
                 }
             }
         }
@@ -133,8 +138,17 @@ public class Game extends Canvas implements Runnable {
             // Checking if the time has run up
             GameOver();
     }
+
+    //Function which is called when game begins
+    public void isStarting() {
+        isStarting = true;
+        handler.clearLevel();
+        handler.addObject(new Start_Screen(0,0, ObjectId.Start_Screen));
+
+    }
+
     //Function which is called when player dies
-    private void GameOver() {
+    public void GameOver() {
         for (int i = 0; i < handler.object.size(); i++){
             GameObject tempObject = handler.object.get(i);
             if(tempObject.getId() == ObjectId.Player){
@@ -163,24 +177,16 @@ public class Game extends Canvas implements Runnable {
 
         g2d.translate(cam.getX(),cam.getY());
 
-        g.drawImage(city,0,0, 960, 2000, this);//Draws the background scene
+        g.drawImage(city,0,-180, 5000, 350, this);//Draws the background scene
         handler.render(g);//Draws all the objects
 
         g2d.translate(-cam.getX(),-cam.getY());//Adjusts camera so is aligned with player
-        hud.draw((Graphics2D) g);//Draws the heads up display
+        hud.draw(g2d);//Draws the heads up display
 
         /******************/
         g.dispose();
         bs.show();
 
-    }
-
-    public static int getTime() {
-        return time;
-    }
-
-    public static void setTime(int new_time) {
-        time = new_time;
     }
 
     public static Texture getInstance(){
@@ -190,7 +196,8 @@ public class Game extends Canvas implements Runnable {
     public static void main(String args[]) {
         startGame();
     }
-    //Creates the new Window
+
+    // Creates the new Window and game object
     public static void startGame() {
         new Window(960, 800, "A Dungeon Game",  new Game());
     }

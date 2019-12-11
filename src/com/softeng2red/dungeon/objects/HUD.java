@@ -1,5 +1,7 @@
 package com.softeng2red.dungeon.objects;
 
+import com.softeng2red.dungeon.framework.GameObject;
+import com.softeng2red.dungeon.framework.ObjectId;
 import com.softeng2red.dungeon.framework.Texture;
 import com.softeng2red.dungeon.window.Game;
 import com.softeng2red.dungeon.window.Handler;
@@ -11,20 +13,24 @@ import java.awt.*;
 //This shows the health and the time
 public class HUD {
 
-    Handler handler;
     Game_Timer timer;
     private Health healthObject;
     private Font font;
+    Finishing_Screen finishingScreen;
     private boolean running = true;
     Texture tex = Game.getInstance();
 
-    public HUD (Health healthObject, Game_Timer timer) {
+    public HUD (Health healthObject, Game_Timer timer, Finishing_Screen finishingScreen) {
         try{
+
             this.healthObject = healthObject;
             this.timer = timer;
+            this.finishingScreen = finishingScreen;
             font = new Font("Arial", Font.PLAIN, 24);
+
         }
         catch (Exception e){
+            System.out.println("hello");
             e.printStackTrace();
         }
     }
@@ -32,13 +38,13 @@ public class HUD {
 
     public void draw(Graphics2D g){
 
-        if(running) {
+        if(running && !Game.isStarting) {
 
             // Varies the size of the spotlight dependant on how much beer has been collected
-            if (healthObject.beerNum == 1) g.drawImage(tex.spotlight[3], 1,1, Game.WIDTH + 20,Game.HEIGHT + 20, null);
-            else if (healthObject.beerNum == 2) g.drawImage(tex.spotlight[2], 1,1, Game.WIDTH + 20,Game.HEIGHT + 20, null);
-            else if (healthObject.beerNum == 3) g.drawImage(tex.spotlight[1], 1,1, Game.WIDTH + 20,Game.HEIGHT + 20, null);
-            else if (healthObject.beerNum >= 4) g.drawImage(tex.spotlight[0], 1,1, Game.WIDTH + 20,Game.HEIGHT + 20, null);
+            if (healthObject.beerNum == 1) g.drawImage(tex.spotlight[3], 0,0, Game.WIDTH + 20,Game.HEIGHT + 20, null);
+            else if (healthObject.beerNum == 2) g.drawImage(tex.spotlight[2], 0,0, Game.WIDTH + 20,Game.HEIGHT + 20, null);
+            else if (healthObject.beerNum == 3) g.drawImage(tex.spotlight[1], 0,0, Game.WIDTH + 20,Game.HEIGHT + 20, null);
+            else if (healthObject.beerNum >= 4) g.drawImage(tex.spotlight[0], 0,0, Game.WIDTH + 20,Game.HEIGHT + 20, null);
 
             // Different number of hearts shown
             for (int i = 0; i < healthObject.healthNum; i++) {
@@ -50,16 +56,24 @@ public class HUD {
             g.setFont(font);
             g.drawString(String.format("Time: %03d", timer.getTime()), 37, 130); // Timer可以用
         }
+
+        if(finishingScreen.isFinished) {
+            g.drawImage(tex.gameover[0],0,0,null);
+        }
     }
 
     public void init() {
         running = true;
+        healthObject.healthNum = GameObject.init_health;
     }
 
 
+    // when running is false, HUD stops display health and timer
     public void clear(){
         running = false;
     }
+
+    
 
 }
 

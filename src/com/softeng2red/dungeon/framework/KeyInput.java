@@ -1,5 +1,6 @@
 package com.softeng2red.dungeon.framework;
 
+import com.softeng2red.dungeon.objects.Game_Timer;
 import com.softeng2red.dungeon.objects.Health;
 import com.softeng2red.dungeon.window.Handler;
 import com.softeng2red.dungeon.objects.HUD;
@@ -14,6 +15,9 @@ public class KeyInput extends KeyAdapter {
     Handler handler;
     Game game;
     HUD hud;
+    int key;
+    protected ObjectId id;
+
     public KeyInput(Handler handler, Game game, HUD hud) {
         this.handler = handler;
         this.game = game;
@@ -23,10 +27,9 @@ public class KeyInput extends KeyAdapter {
     //If a useful key is pressed a corresponding action occurs
     //Often a change in the velocity of the player
     public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
+        key = e.getKeyCode();
         for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
-            GameObject healthObject = handler.object.get(0);
             if (tempObject.getId() == ObjectId.Player) {
                 if (key == KeyEvent.VK_RIGHT) {
                     tempObject.m_Left = false;
@@ -49,9 +52,27 @@ public class KeyInput extends KeyAdapter {
                     Game.LEVEL = 0;
                     handler.switchLevel();
                     hud.init();
-                    Game.setTime(Game.init_time);
+//                    Game_Timer.setTime(GameObject.init_time);
 
 
+                }
+            }
+
+            if (tempObject.getId() == ObjectId.Start_Screen) {
+                if (key == KeyEvent.VK_1) {
+                    Game.LEVEL = 0;
+                    Game.isStarting = false;
+                    handler.switchLevel();
+                }
+                if (key == KeyEvent.VK_2) {
+                    Game.LEVEL = 1;
+                    Game.isStarting = false;
+                    handler.switchLevel();
+                }
+                if (key == KeyEvent.VK_3) {
+                    Game.LEVEL = 2;
+                    Game.isStarting = false;
+                    handler.switchLevel();
                 }
             }
         }
@@ -74,5 +95,9 @@ public class KeyInput extends KeyAdapter {
                     tempObject.setVelX(0);
             }
         }
+    }
+
+    public void setKeyInput(int keycode) {
+        key = keycode;
     }
 }

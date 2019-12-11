@@ -1,5 +1,7 @@
 package com.softeng2red.dungeon.framework;
 
+import com.softeng2red.dungeon.objects.Finishing_Screen;
+
 import java.awt.*;
 import java.util.LinkedList;
 
@@ -18,10 +20,13 @@ public abstract class GameObject {
     protected boolean m_Down = false;
     public static int init_time = 120;
     public static int init_health = 1;
-    public int healthNum = init_health;
-    public int beerNum = 1;
+    public static int healthNum = init_health;
+    public static int beerNum = 1;
     public int maxHealth  = 4;
     public int minHealth  = 0;
+    public int img_type = 0;
+    public static boolean isFinished = false;
+
 
 
     public GameObject(float x, float y, ObjectId id) {
@@ -85,10 +90,10 @@ public abstract class GameObject {
         this.jumping = jumping;
     }
 
-
     public ObjectId getId() {
         return id;
     }
+
 
 
 }
